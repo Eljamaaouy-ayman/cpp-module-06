@@ -5,6 +5,7 @@ ScalarConverter::ScalarConverter(){}
 ScalarConverter::ScalarConverter(const ScalarConverter& other){*this = other;}
 
 ScalarConverter& ScalarConverter::operator=(const ScalarConverter& other){
+    (void)other;
     return *this;
 }
 
@@ -14,8 +15,8 @@ void helper(std::string literal){
     std::string val;
     if(literal == "-inff" || literal == "+inff" || literal == "nanf" || literal == "-inf" || literal == "+inf" || literal == "nan")
         literal[0] == '-' ? val = "-inf" : literal[0] == '+' ? val = "+inf" : val = "nan";
-        std::cout << "float: " << val << 'f' << std::endl;
-        std::cout << "double: " << val << std::endl;
+    std::cout << "float: " << val << 'f' << std::endl;
+    std::cout << "double: " << val << std::endl;
 }
 
 void charprint(const double &num){
@@ -35,14 +36,14 @@ void intprint(const double &num){
 }
 
 void floatprint(const double &num){
-    if (num > std::numeric_limits<float>::max() || num < std::numeric_limits<float>::min())
+    if (num > std::numeric_limits<float>::max() || num < -std::numeric_limits<float>::max())
         std::cout << "float : impossible" << std::endl;
     else
         std::cout << std::fixed << std::setprecision(1) << "float : " << static_cast<float>(num) << "f" << std::endl;
 }
 
 void doubleprint(const double &num){
-    if (num > std::numeric_limits<double>::max() || num < std::numeric_limits<double>::min())
+    if (num > std::numeric_limits<double>::max() || num < -std::numeric_limits<double>::max())
         std::cout << "double : impossible" << std::endl;
     else
         std::cout << "double : " << static_cast<double>(num) << std::endl;
@@ -66,23 +67,28 @@ void ScalarConverter::convert(std::string literal){
         throw std::runtime_error("error");
     else if (literal.length() == 1)
     {
-        if(isdigit(literal[0]))
+        if(isdigit(literal[0])){
             printconvert(atoi(literal.c_str()));
+        }
         else
             printconvert(literal[0]);
     }
     else
     {
         char *end = NULL;
-
+        int f = 0;
         if(literal[literal.length() - 1] == 'f')
+        {
             literal[literal.length() - 1] = '\0';
+            f = 1;
+        }
 
         double n = strtod(literal.c_str(), &end);
-
         if(*end != '\0')
             throw std::runtime_error("error");
         if (literal[literal.length() - 1] == '.' || literal[0] == '.')
+            throw std::runtime_error("error");
+        if (f == 1 && (literal[literal.length() - 2] == '.'))
             throw std::runtime_error("error");
         if ((literal[0] == '-' || literal[0] == '+') && literal[1] == '.')
             throw std::runtime_error("error");
